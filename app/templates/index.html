@@ -1,17 +1,25 @@
-{%extends 'base.html'%}
-{%block Saas%} Saas {%endblock%}
+{% extends 'base.html' %}
+{% block Saas %} Saas {% endblock %}
 
-
-
-
-{%block content%}
+{% block content %}
 <h1>
-    {{my_title}}
-    
+    {{ my_title }}
 </h1>
-HELLO   AGAIN 
-{%include 'welcome.html'%}
+
+<h2>List of Page Visits:</h2>
+<ul>
+    {% for visit in query_set %}
+        <li>Path: {{ visit.path }} - Visited at: {{ visit.timestamp }}</li>
+    {% empty %}
+        <li>No visits recorded yet.</li>
+    {% endfor %}
+</ul>
+{{total_visit_count}}
+{{query_set_count}}
+{{percentage}}
 
 
+<p>HELLO AGAIN</p>
+{% include 'welcome.html' %}
 
-{%endblock%}
+{% endblock %}
