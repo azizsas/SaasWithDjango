@@ -1,23 +1,49 @@
-from django.shortcuts import render,HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 import pathlib
-from . models import PageVisit
-# Create your views here.
-this_dir=pathlib.Path(__file__).resolve().parent
-def home(request,*args,**kwargs):
-    qs=PageVisit.objects.all()
-    page_qs= PageVisit.objects.filter(path=request.path)
+from .models import PageVisit
+
+# Get the current directory
+this_dir = pathlib.Path(__file__).resolve().parent
+
+def home(request, *args, **kwargs):
+    qs = PageVisit.objects.all()
+    page_qs = PageVisit.objects.filter(path=request.path)
 
     my_title = "Hello there..."
+    total_count = qs.count()
+    page_count = page_qs.count()
+
+    percentage = (page_count / total_count) * 100 if total_count > 0 else 0  # Avoid ZeroDivisionError
+
     my_context = {
         "title": my_title,
-        "query_set_count": page_qs.count(),
-        "total_visit_count": qs.count(),
-        "percentage": (page_qs.count()/qs.count())*100
+        "query_set_count": page_count,
+        "total_visit_count": total_count,
+        "percentage": percentage
     }
 
-    path = request.path
-    print('path',path)
-    html_template = "index.html"
+    print('Path:', request.path)
     PageVisit.objects.create(path=request.path)
-    return render(request,html_template,my_context)
+    return render(request, "index.html", my_context)
+
+def about(request, *args, **kwargs):
+    qs = PageVisit.objects.all()
+    page_qs = PageVisit.objects.filter(path=request.path)
+
+    total_count = qs.count()
+    page_count = page_qs.count()
+    try:
+        percentage = (page_count / total_count) * 100 if total_count > 0 else 0  # Avoid ZeroDivisionError
+    except:
+        percentage = 0
+    my_title = "About Page"
+    my_context = {
+        "title": my_title,
+        "query_set_count": page_count,
+        "total_visit_count": total_count,
+        "percentage": percentage
+    }
+
+    print('Path:', request.path)
+    PageVisit.objects.create(path=request.path)
+    return render(request, "about.html", my_context)
